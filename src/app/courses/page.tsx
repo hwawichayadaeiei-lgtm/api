@@ -1,3 +1,4 @@
+import CourseCard from "@/components/CourseCard";
 type Course = {
   id: number;
   code: string;
@@ -58,19 +59,7 @@ export default function CoursesPage() {
 
       <section className="courseGrid">
         {courses.map((course) => (
-          <article key={course.id} className="courseCard">
-            <h2>{course.title}</h2>
-
-            <p>รหัสวิชา: {course.code}</p>
-
-            <p>{course.credits} หน่วยกิต</p>
-
-            <p>
-              {course.isOpen
-                ? "เปิดลงทะเบียน"
-                : "ปิดลงทะเบียน"}
-            </p>
-          </article>
+          <CourseCard key={course.id} course={course} />
         ))}
       </section>
     </main>
