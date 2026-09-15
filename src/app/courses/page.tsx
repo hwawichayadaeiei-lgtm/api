@@ -3,49 +3,49 @@ import type { Course } from "@/types/course";
 
 const courses: Course[] = [
   {
-    id: 1,
+    id: "1",
     code: "10301231",
-    title: "Web Technology",
-    credits: 3,
-    isOpen: true,
+    name: "Web Technology",
+    credit: 3,
+    instructor: "อาจารย์ผู้สอนรายวิชา",
   },
   {
-    id: 2,
+    id: "2",
     code: "10301232",
-    title: "Database Systems",
-    credits: 3,
-    isOpen: false,
+    name: "Database Systems",
+    credit: 3,
+    instructor: "อาจารย์ผู้สอนรายวิชา",
   },
   {
-    id: 3,
+    id: "3",
     code: "10301233",
-    title: "Software Engineering",
-    credits: 3,
-    isOpen: true,
+    name: "Software Engineering",
+    credit: 3,
+    instructor: "อาจารย์ผู้สอนรายวิชา",
   },
   {
-    id: 4,
+    id: "4",
     code: "10301234",
-    title: "Computer Programming",
-    credits: 3,
-    isOpen: true,
+    name: "Computer Programming",
+    credit: 3,
+    instructor: "อาจารย์ผู้สอนรายวิชา",
   },
   {
-    id: 5,
+    id: "5",
     code: "10301235",
-    title: "Data Structures",
-    credits: 3,
-    isOpen: false,
+    name: "Data Structures",
+    credit: 3,
+    instructor: "อาจารย์ผู้สอนรายวิชา",
   },
   {
-    id: 6,
+    id: "6",
     code: "10301236",
-    title: "Computer Networks",
-    credits: 3,
-    isOpen: true,
+    name: "Computer Networks",
+    credit: 3,
+    instructor: "อาจารย์ผู้สอนรายวิชา",
   },
 ];
 
 export default function CoursesPage() {
-  return <CourseExplorer courses={courses} />;
+  return <CourseExplorer initialCourses={courses} />;
 }

@@ -2,23 +2,35 @@
 
 import { useState, type ChangeEvent } from "react";
 import type { Course } from "@/types/course";
+import { courses as courseData } from "@/data/cours";
 import CourseCard from "@/components/CourseCard";
 import CourseForm, { type CourseDraft } from "./CourseForm";
 
 type CourseExplorerProps = {
-  initialCourses: Course[];
+  initialCourses?: Course[];
 };
 
 export default function CourseExplorer({
   initialCourses,
 }: CourseExplorerProps) {
   const [keyword, setKeyword] = useState("");
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
-  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(
+    [],
+  );
+
+  const [courses, setCourses] = useState<Course[]>(
+    initialCourses ?? courseData,
+  );
+
+  const [editingId, setEditingId] = useState<string | null>(
+    null,
+  );
 
   // ค้นหา
-  function handleKeywordChange(event: ChangeEvent<HTMLInputElement>) {
+  function handleKeywordChange(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
     setKeyword(event.target.value);
   }
 
@@ -32,22 +44,36 @@ export default function CourseExplorer({
       instructor: draft.instructor.trim(),
     };
 
-    setCourses((prevCourses) => [...prevCourses, newCourse]);
+    setCourses((prevCourses) => [
+      ...prevCourses,
+      newCourse,
+    ]);
   }
 
   // ลบรายวิชา
   function handleDelete(id: string) {
     setCourses((prevCourses) =>
-      prevCourses.filter((course) => course.id !== id),
+      prevCourses.filter(
+        (course) => course.id !== id,
+      ),
     );
 
     setFavoriteIds((prevIds) =>
-      prevIds.filter((favoriteId) => favoriteId !== id),
+      prevIds.filter(
+        (favoriteId) => favoriteId !== id,
+      ),
     );
+
+    if (editingId === id) {
+      setEditingId(null);
+    }
   }
 
   // แก้ไขรายวิชา
-  function handleUpdate(id: string, draft: CourseDraft) {
+  function handleUpdate(
+    id: string,
+    draft: CourseDraft,
+  ) {
     setCourses((prevCourses) =>
       prevCourses.map((course) =>
         course.id === id
@@ -79,18 +105,26 @@ export default function CourseExplorer({
   function handleToggleFavorite(id: string) {
     setFavoriteIds((prevIds) =>
       prevIds.includes(id)
-        ? prevIds.filter((favoriteId) => favoriteId !== id)
+        ? prevIds.filter(
+            (favoriteId) => favoriteId !== id,
+          )
         : [...prevIds, id],
     );
   }
 
   // ค้นหาจากชื่อวิชาหรือรหัสวิชา
-  const searchText = keyword.trim().toLowerCase();
+  const searchText = keyword
+    .trim()
+    .toLowerCase();
 
   const visibleCourses = courses.filter(
     (course) =>
-      course.name.toLowerCase().includes(searchText) ||
-      course.code.toLowerCase().includes(searchText),
+      course.name
+        .toLowerCase()
+        .includes(searchText) ||
+      course.code
+        .toLowerCase()
+        .includes(searchText),
   );
 
   // รายวิชาที่กำลังแก้ไข
@@ -136,7 +170,9 @@ export default function CourseExplorer({
         <div className="empty-state">
           <h2>ไม่พบรายวิชา</h2>
 
-          <p>ไม่พบรายวิชาที่ตรงกับ "{keyword}"</p>
+          <p>
+            ไม่พบรายวิชาที่ตรงกับ "{keyword}"
+          </p>
 
           <button
             type="button"
@@ -152,10 +188,18 @@ export default function CourseExplorer({
             <CourseCard
               key={course.id}
               course={course}
-              isFavorite={favoriteIds.includes(course.id)}
-              onToggleFavorite={handleToggleFavorite}
-              onEdit={() => setEditingId(course.id)}
-              onDelete={() => handleDelete(course.id)}
+              isFavorite={favoriteIds.includes(
+                course.id,
+              )}
+              onToggleFavorite={
+                handleToggleFavorite
+              }
+              onEdit={() =>
+                setEditingId(course.id)
+              }
+              onDelete={() =>
+                handleDelete(course.id)
+              }
             />
           ))}
         </section>

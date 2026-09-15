@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap");
 * {
   box-sizing: border-box;
   margin: 0;
@@ -807,69 +807,262 @@ main > h1 {
   box-shadow: 0 0 18px rgba(168, 85, 247, 0.2);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Prompt", sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(124, 58, 237, 0.18), transparent 30%),
+    radial-gradient(circle at 85% 20%, rgba(37, 99, 235, 0.14), transparent 30%),
+    #09090b;
+  color: #f8fafc;
+  min-height: 100vh;
+}
 
 /* =========================
-   SEARCH BUTTON
+   Navbar
 ========================= */
 
-.search-button {
-  height: 46px;
-  padding: 0 20px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #a855f7, #ec4899);
-  color: white;
-  font-size: 14px;
+nav {
+  background: rgba(10, 10, 15, 0.9);
+  border-bottom: 1px solid #27272a;
+  padding: 18px 8%;
+}
+
+nav ul {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+nav a:hover {
+  color: #c084fc;
+}
+
+/* =========================
+   Main
+========================= */
+
+.page {
+  width: min(1100px, 90%);
+  margin: 0 auto;
+  padding: 70px 0 100px;
+}
+
+/* =========================
+   Heading
+========================= */
+
+.page > h1 {
+  margin: 0 0 45px;
+  font-size: clamp(42px, 6vw, 72px);
+  line-height: 1.1;
   font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
+  letter-spacing: -2px;
 
-.search-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(168, 85, 247, 0.4);
-}
+  background: linear-gradient(
+    90deg,
+    #ffffff,
+    #d8b4fe,
+    #a855f7
+  );
 
-.search-button:active {
-  transform: scale(0.96);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-
 
 /* =========================
-   CLEAR SEARCH
+   Course Form
 ========================= */
+
+.page > form {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+
+  padding: 24px;
+  margin-bottom: 25px;
+
+  background: rgba(24, 24, 27, 0.85);
+  border: 1px solid #27272a;
+  border-radius: 18px;
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.35);
+}
+
+.page > form h2 {
+  grid-column: 1 / -1;
+  margin: 0 0 4px;
+  font-size: 18px;
+  color: #e9d5ff;
+}
+
+.page > form label {
+  display: block;
+  margin-bottom: 7px;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.page > form input {
+  width: 100%;
+  height: 42px;
+
+  padding: 0 12px;
+
+  border: 1px solid #3f3f46;
+  border-radius: 10px;
+
+  background: #18181b;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+  transition: 0.2s;
+}
+
+.page > form input:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+}
+
+.page > form button {
+  height: 42px;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+button {
+  border: 0;
+  border-radius: 10px;
+
+  padding: 10px 17px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* ปุ่มบันทึก */
+
+button[type="submit"] {
+  background: linear-gradient(
+    135deg,
+    #7c3aed,
+    #2563eb
+  );
+
+  color: white;
+
+  box-shadow:
+    0 6px 18px rgba(124, 58, 237, 0.25);
+}
+
+button[type="submit"]:hover {
+  box-shadow:
+    0 8px 25px rgba(124, 58, 237, 0.4);
+}
+
+/* =========================
+   Search
+========================= */
+
+.course-search {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.course-search input {
+  flex: 1;
+
+  height: 46px;
+  padding: 0 16px;
+
+  border-radius: 12px;
+  border: 1px solid #3f3f46;
+
+  background: #18181b;
+  color: white;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+}
+
+.course-search input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+}
 
 .clear-search-button {
-  height: 46px;
-  padding: 0 18px;
-  border: 1px solid rgba(236, 72, 153, 0.45);
-  border-radius: 12px;
-  background: rgba(236, 72, 153, 0.08);
-  color: #f9a8d4;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: 0.25s ease;
+  background: #27272a;
+  color: #d4d4d8;
 }
 
 .clear-search-button:hover {
-  transform: translateY(-2px);
-  background: rgba(236, 72, 153, 0.18);
-  border-color: #ec4899;
-  color: white;
-  box-shadow: 0 6px 18px rgba(236, 72, 153, 0.25);
+  background: #3f3f46;
 }
-
-.clear-search-button:active {
-  transform: scale(0.96);
-}
-
 
 /* =========================
-   COURSE CARD
+   Course Count
+========================= */
+
+.page > p {
+  color: #a1a1aa;
+  font-size: 14px;
+  margin: 18px 0 25px;
+}
+
+/* =========================
+   Course Grid
 ========================= */
 
 .courseGrid {
@@ -878,105 +1071,188 @@ main > h1 {
   gap: 20px;
 }
 
+/* =========================
+   Course Card
+========================= */
+
 .course-card {
-  padding: 22px;
+  padding: 24px;
+
+  background: linear-gradient(
+    145deg,
+    #18181b,
+    #111113
+  );
+
+  border: 1px solid #27272a;
   border-radius: 18px;
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  background: rgba(255, 255, 255, 0.04);
-  transition: 0.25s ease;
+
+  min-height: 190px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3);
+
+  transition:
+    transform 0.25s,
+    border-color 0.25s,
+    box-shadow 0.25s;
 }
 
 .course-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(192, 132, 252, 0.5);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+
+  border-color: #7c3aed;
+
+  box-shadow:
+    0 15px 40px rgba(124, 58, 237, 0.15);
 }
 
+.course-card h2 {
+  margin: 0 0 14px;
+
+  font-size: 21px;
+  line-height: 1.4;
+}
+
+.course-card h2 a {
+  color: #c084fc;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.course-card h2 a:hover {
+  color: #e9d5ff;
+}
+
+.course-card p {
+  margin: 7px 0;
+
+  color: #a1a1aa;
+  font-size: 14px;
+}
 
 /* =========================
-   FAVORITE BUTTON
+   Card Buttons
 ========================= */
 
+.course-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  margin-top: 20px;
+}
+
+.course-actions button {
+  padding: 8px 15px;
+}
+
+/* Favorite */
+
 .favorite-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-top: 12px;
-  padding: 10px 18px;
-
-  border: 1px solid rgba(192, 132, 252, 0.45);
-  border-radius: 12px;
-
-  background: rgba(168, 85, 247, 0.1);
-  color: #e9d5ff;
-
-  font-size: 14px;
-  font-weight: 700;
-  font-family: inherit;
-
-  cursor: pointer;
-  transition: 0.25s ease;
+  background: #27272a;
+  color: #d4d4d8;
 }
 
 .favorite-button:hover {
-  transform: translateY(-2px);
-
-  background: linear-gradient(
-    135deg,
-    rgba(168, 85, 247, 0.3),
-    rgba(236, 72, 153, 0.2)
-  );
-
-  border-color: #c084fc;
-  color: white;
-
-  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+  background: #3f3f46;
 }
-
-.favorite-button:active {
-  transform: scale(0.96);
-}
-
-
-/* =========================
-   FAVORITE ACTIVE
-========================= */
 
 .favorite-button.is-favorite {
-  background: linear-gradient(135deg, #a855f7, #ec4899);
-  border-color: transparent;
-  color: white;
-  box-shadow: 0 5px 18px rgba(168, 85, 247, 0.3);
+  background: rgba(168, 85, 247, 0.15);
+  color: #d8b4fe;
+  border: 1px solid #7c3aed;
 }
 
-.favorite-button.is-favorite:hover {
-  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+/* Edit */
+
+.course-actions button:nth-child(2) {
+  background: #27272a;
+  color: #cbd5e1;
 }
 
+.course-actions button:nth-child(2):hover {
+  background: #3f3f46;
+}
+
+/* Delete */
+
+.course-actions button:nth-child(3) {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.course-actions button:nth-child(3):hover {
+  background: rgba(239, 68, 68, 0.22);
+}
 
 /* =========================
-   MOBILE
+   Empty State
 ========================= */
 
-@media (max-width: 800px) {
+.empty-state {
+  text-align: center;
+
+  padding: 60px 20px;
+
+  border: 1px dashed #3f3f46;
+  border-radius: 18px;
+
+  background: rgba(24, 24, 27, 0.7);
+}
+
+.empty-state h2 {
+  margin-bottom: 8px;
+  color: #e9d5ff;
+}
+
+.empty-state p {
+  color: #71717a;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 900px) {
   .courseGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .page > form {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 600px) {
-  .course-search {
-    flex-direction: column;
-    align-items: stretch;
+  nav ul {
+    flex-wrap: wrap;
+    gap: 15px;
   }
 
-  .search-button,
-  .clear-search-button {
-    width: 100%;
+  .page {
+    width: 92%;
+    padding-top: 40px;
+  }
+
+  .page > h1 {
+    font-size: 42px;
+    margin-bottom: 30px;
+  }
+
+  .page > form {
+    grid-template-columns: 1fr;
   }
 
   .courseGrid {
     grid-template-columns: 1fr;
+  }
+
+  .course-search {
+    flex-direction: column;
+  }
+
+  .clear-search-button {
+    width: 100%;
   }
 }
