@@ -1,19 +1,36 @@
+"use client";
+
 import type { Course } from "@/types/course";
+import Link from "next/link";
 
 type CourseCardProps = {
   course: Course;
-  description?: string;
+  onEdit: () => void;
+  onDelete: () => void;
 };
 
 export default function CourseCard({
   course,
-  description,
+  onEdit,
+  onDelete,
 }: CourseCardProps) {
   return (
-    <article className="course-card">
-      <h2>{course.title}</h2>
-      <p>รหัสวิชา: {course.code}</p>
-      {description && <p>{description}</p>}
+    <article>
+      <h2>
+        <Link href={`/courses/${course.id}`}>
+          {course.name}
+        </Link>
+      </h2>
+
+      <p>{course.code}</p>
+
+      <button type="button" onClick={onEdit}>
+        แก้ไข
+      </button>
+
+      <button type="button" onClick={onDelete}>
+        ลบ
+      </button>
     </article>
   );
 }

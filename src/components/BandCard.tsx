@@ -1,11 +1,23 @@
+"use client";
+
 import Image from "next/image";
 import type { Band } from "@/types/band";
 
 type BandCardProps = {
   band: Band;
+  isFollowing: boolean;
+  likeCount: number;
+  onToggleFollow: (id: number) => void;
+  onLike: (id: number) => void;
 };
 
-export default function BandCard({ band }: BandCardProps) {
+export default function BandCard({
+  band,
+  isFollowing,
+  likeCount,
+  onToggleFollow,
+  onLike,
+}: BandCardProps) {
   return (
     <article className="band-card">
       {/* รูปวง */}
@@ -25,6 +37,28 @@ export default function BandCard({ band }: BandCardProps) {
 
       {/* รายละเอียดวง */}
       <p>{band.description}</p>
+
+      {/* จำนวนสมาชิก */}
+      <p>สมาชิก {band.members.length} คน</p>
+
+      {/* ปุ่มติดตามและ Like */}
+      <div className="band-actions">
+        <button
+          type="button"
+          className={`follow-button ${isFollowing ? "following" : ""}`}
+          onClick={() => onToggleFollow(band.id)}
+        >
+          {isFollowing ? "✓ กำลังติดตาม" : "+ ติดตาม"}
+        </button>
+
+        <button
+          type="button"
+          className="like-button"
+          onClick={() => onLike(band.id)}
+        >
+          ♥ Like {likeCount}
+        </button>
+      </div>
 
       {/* อัลบั้ม */}
       <h3>อัลบั้มแนะนำ</h3>

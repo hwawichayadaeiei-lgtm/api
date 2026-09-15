@@ -1,11 +1,5 @@
-import CourseCard from "@/components/CourseCard";
-type Course = {
-  id: number;
-  code: string;
-  title: string;
-  credits: number;
-  isOpen: boolean;
-};
+import CourseExplorer from "@/components/CourseExplorer";
+import type { Course } from "@/types/course";
 
 const courses: Course[] = [
   {
@@ -53,15 +47,5 @@ const courses: Course[] = [
 ];
 
 export default function CoursesPage() {
-  return (
-    <main className="page">
-      <h1>รายวิชาทั้งหมด</h1>
-
-      <section className="courseGrid">
-        {courses.map((course) => (
-          <CourseCard key={course.id} course={course} />
-        ))}
-      </section>
-    </main>
-  );
+  return <CourseExplorer courses={courses} />;
 }
