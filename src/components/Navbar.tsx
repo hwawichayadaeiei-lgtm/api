@@ -23,8 +23,14 @@ export default function Navbar() {
         </li>
 
         <li>
-          <Link className="navLink" href="bands">
+          <Link className="navLink" href="/bands">
             วงดนตรี
+          </Link>
+        </li>
+
+        <li>
+          <Link className="navLink" href="/games">
+            เกม
           </Link>
         </li>
       </ul>
