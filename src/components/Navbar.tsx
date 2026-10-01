@@ -33,6 +33,11 @@ export default function Navbar() {
             เกม
           </Link>
         </li>
+        <li>
+          <Link className="navLink" href="/products">
+            รายการสินค้า
+          </Link>
+        </li>
       </ul>
     </nav>
   );
