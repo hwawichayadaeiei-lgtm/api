@@ -1,67 +1,111 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { defaultQuery, fetchProducts } from "@/lib/products";
+
+// นำเข้า API และค่าค้นหาเริ่มต้น
+import {
+    defaultQuery,
+    fetchProducts,
+} from "@/lib/products";
+
+// นำเข้า Type ของข้อมูลสินค้า
 import type {
     Product,
     ProductDraft,
     ProductList,
     SearchQuery,
 } from "@/lib/products";
-import ProductSearchForm from "./ProductSearchForm";
-import ProductForm from "./ProductForm";
 
-type LoadState = "idle" | "loading" | "error" | "ready";
+// นำเข้า Component ฟอร์มเพิ่ม/แก้ไข และฟอร์มค้นหา
+import ProductForm from "./ProductForm";
+import ProductSearchForm from "./ProductSearchForm";
+
+// กำหนดสถานะของการโหลดข้อมูล
+type LoadState =
+    | "idle"
+    | "loading"
+    | "error"
+    | "ready";
 
 export default function ProductExplorer() {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [status, setStatus] = useState<LoadState>("idle");
-    const [errorMessage, setErrorMessage] = useState("");
+    // เก็บรายการสินค้าที่แสดงบนหน้าเว็บ
+    const [products, setProducts] =
+        useState<Product[]>([]);
+
+    // เก็บสถานะการโหลดข้อมูล
+    const [status, setStatus] =
+        useState<LoadState>("idle");
+
+    // เก็บข้อความ Error เมื่อโหลดข้อมูลไม่สำเร็จ
+    const [errorMessage, setErrorMessage] =
+        useState("");
 
     // เก็บสินค้าที่กำลังแก้ไข
     const [editingProduct, setEditingProduct] =
         useState<Product | null>(null);
 
+    // แสดงผลเมื่อโหลดข้อมูลสำเร็จ
     function showResult(list: ProductList) {
         setProducts(list.products);
         setStatus("ready");
 
-        // console.log('พบสินค้า', list.products.length, 'รายการ จากทั้งหมด', list.total, 'รายการ');
-        console.log(products);
+        console.log(
+            "พบสินค้า",
+            list.products.length,
+            "รายการ จากทั้งหมด",
+            list.total,
+            "รายการ",
+        );
     }
 
+    // แสดงข้อความ Error เมื่อเกิดข้อผิดพลาด
     function showError(error: unknown) {
         setErrorMessage(
             error instanceof Error
                 ? error.message
                 : "เรียกข้อมูลไม่สำเร็จ",
         );
+
         setStatus("error");
     }
 
-    async function loadProducts(query: SearchQuery) {
+    // โหลดสินค้าตามเงื่อนไขที่ผู้ใช้ค้นหา
+    async function loadProducts(
+        query: SearchQuery,
+    ) {
         setStatus("loading");
         setErrorMessage("");
 
         try {
-            showResult(await fetchProducts(query));
+            // เรียกข้อมูลสินค้าจาก API
+            const result =
+                await fetchProducts(query);
+
+            // นำข้อมูลที่ได้มาแสดง
+            showResult(result);
         } catch (error) {
+            // ถ้าเกิด Error ให้แสดงข้อความ
             showError(error);
         }
     }
 
+    // โหลดข้อมูลเริ่มต้นเมื่อเปิดหน้าเว็บ
     useEffect(() => {
         fetchProducts(defaultQuery)
             .then(showResult)
             .catch(showError);
     }, []);
 
-    function saveProduct(draft: ProductDraft) {
-        // ถ้ามีสินค้าที่กำลังแก้ไข
+    // เพิ่มสินค้าใหม่ หรือแก้ไขสินค้าที่มีอยู่
+    function saveProduct(
+        draft: ProductDraft,
+    ) {
         if (editingProduct) {
+            // แก้ไขข้อมูลสินค้าที่เลือก
             setProducts((prevProducts) =>
                 prevProducts.map((product) =>
-                    product.id === editingProduct.id
+                    product.id ===
+                    editingProduct.id
                         ? {
                               ...product,
                               ...draft,
@@ -70,219 +114,316 @@ export default function ProductExplorer() {
                 ),
             );
 
+            // ออกจากโหมดแก้ไข
             setEditingProduct(null);
         } else {
-            // เพิ่มสินค้าใหม่
+            // เพิ่มสินค้าใหม่เข้าไปในรายการ
             setProducts((prevProducts) => [
                 ...prevProducts,
                 {
                     ...draft,
                     id: Date.now(),
-                    thumbnail:
-                        "https://dummyjson.com/image/200x200",
-                    description: "",
                     reviews: [],
                 },
             ]);
         }
 
+        // เปลี่ยนสถานะเป็นพร้อมแสดงผล
         setStatus("ready");
     }
 
-    // ลบสินค้า
+    // ลบสินค้าตาม id
     function deleteProduct(id: number) {
-        if (!window.confirm("ต้องการลบสินค้านี้หรือไม่?")) {
+        // ถ้าผู้ใช้ยกเลิกการลบ ให้หยุดการทำงาน
+        if (
+            !window.confirm(
+                "ต้องการลบสินค้านี้หรือไม่?",
+            )
+        ) {
             return;
         }
 
+        // ลบสินค้าที่มี id ตรงกัน
         setProducts((prevProducts) =>
             prevProducts.filter(
-                (product) => product.id !== id,
+                (product) =>
+                    product.id !== id,
             ),
         );
     }
 
     return (
         <main>
+            {/* หัวข้อหลักของหน้า */}
             <h1>รายการสินค้า</h1>
 
-            <ProductSearchForm onSearch={loadProducts} />
+            {/* ฟอร์มสำหรับเพิ่มหรือแก้ไขสินค้า */}
+            <ProductForm
+                key={
+                    editingProduct?.id ??
+                    "new"
+                }
+                editing={editingProduct}
+                onSave={saveProduct}
+                onCancel={() =>
+                    setEditingProduct(null)
+                }
+            />
 
+            {/* ฟอร์มสำหรับค้นหาสินค้า */}
+            <ProductSearchForm
+                onSearch={loadProducts}
+            />
+
+            {/* ปุ่มสำหรับโหลดข้อมูลเริ่มต้น */}
             <button
                 type="button"
-                onClick={() => loadProducts(defaultQuery)}
-                disabled={status === "loading"}
+                onClick={() =>
+                    loadProducts(defaultQuery)
+                }
+                disabled={
+                    status === "loading"
+                }
             >
                 {status === "loading"
                     ? "กำลังโหลด..."
                     : "โหลดข้อมูล"}
             </button>
 
-            {/* ส่วนแสดงผล เขียนเพิ่มในหัวข้อ 1.7 */}
+            {/* ส่วนแสดงสถานะและรายการสินค้า */}
             <section aria-live="polite">
+                {/* แสดงเมื่อยังไม่มีการโหลดข้อมูล */}
                 {status === "idle" && (
-                    <p>กรุณาคลิกปุ่มเพื่อโหลดข้อมูลสินค้า</p>
+                    <p>
+                        กรุณาคลิกปุ่มเพื่อโหลด
+                        ข้อมูลสินค้า
+                    </p>
                 )}
 
+                {/* แสดงระหว่างกำลังโหลดข้อมูล */}
                 {status === "loading" && (
-                    <p>กำลังโหลดข้อมูล...</p>
+                    <p>
+                        กำลังโหลดข้อมูล...
+                    </p>
                 )}
 
+                {/* แสดงเมื่อเกิดข้อผิดพลาด */}
                 {status === "error" && (
-                    <p role="alert">{errorMessage}</p>
+                    <p role="alert">
+                        {errorMessage}
+                    </p>
                 )}
 
-                {status === "ready" && products.length === 0 && (
-                    <p>ไม่พบสินค้าที่ตรงเงื่อนไข</p>
-                )}
+                {/* แสดงเมื่อค้นหาแล้วไม่พบสินค้า */}
+                {status === "ready" &&
+                    products.length === 0 && (
+                        <p>
+                            ไม่พบสินค้าที่ตรง
+                            เงื่อนไข
+                        </p>
+                    )}
 
-                {status === "ready" && products.length > 0 && (
-                    <div className="product-grid">
-                        {products.map((item) => {
-                            const reviews = item.reviews ?? [];
+                {/* แสดงรายการสินค้าเมื่อโหลดสำเร็จ */}
+                {status === "ready" &&
+                    products.length > 0 && (
+                        <div className="product-grid">
+                            {products.map(
+                                (item) => {
+                                    // เตรียมข้อมูลรีวิว
+                                    const reviews =
+                                        item.reviews ??
+                                        [];
 
-                            const averageRating =
-                                reviews.length > 0
-                                    ? (
-                                          reviews.reduce(
-                                              (total, review) =>
-                                                  total +
-                                                  review.rating,
-                                              0,
-                                          ) /
-                                          reviews.length
-                                      ).toFixed(1)
-                                    : "ไม่มี";
+                                    // คำนวณคะแนนรีวิวเฉลี่ย
+                                    const averageRating =
+                                        reviews.length >
+                                        0
+                                            ? (
+                                                  reviews.reduce(
+                                                      (
+                                                          total,
+                                                          review,
+                                                      ) =>
+                                                          total +
+                                                          review.rating,
+                                                      0,
+                                                  ) /
+                                                  reviews.length
+                                              ).toFixed(
+                                                  1,
+                                              )
+                                            : "ไม่มี";
 
-                            return (
-                                <article
-                                    className="product-card"
-                                    key={item.id}
-                                >
-                                    <img
-                                        src={item.thumbnail}
-                                        alt={item.title}
-                                        className="product-image"
-                                    />
+                                    return (
+                                        <article
+                                            className="product-card"
+                                            key={
+                                                item.id
+                                            }
+                                        >
+                                            {/* รูปภาพสินค้า */}
+                                            <img
+                                                src={
+                                                    item.thumbnail
+                                                }
+                                                alt={
+                                                    item.title
+                                                }
+                                                className="product-image"
+                                                onError={(
+                                                    event,
+                                                ) => {
+                                                    // ซ่อนรูปเมื่อโหลดรูปไม่สำเร็จ
+                                                    event.currentTarget.style.display =
+                                                        "none";
 
-                                    <div className="product-card-content">
-                                        <span className="product-category">
-                                            {item.category}
-                                        </span>
+                                                    console.log(
+                                                        "โหลดรูปไม่สำเร็จ:",
+                                                        item.thumbnail,
+                                                    );
+                                                }}
+                                            />
 
-                                        <h2>
-                                            {item.title}
-                                        </h2>
+                                            <div className="product-card-content">
+                                                {/* แสดงหมวดหมู่สินค้า */}
+                                                <span className="product-category">
+                                                    {
+                                                        item.category
+                                                    }
+                                                </span>
 
-                                        <p className="product-description">
-                                            {item.description}
-                                        </p>
+                                                {/* ชื่อสินค้า */}
+                                                <h2>
+                                                    {
+                                                        item.title
+                                                    }
+                                                </h2>
 
-                                        <p>
-                                            <strong>
-                                                ราคา:
-                                            </strong>{" "}
-                                            {item.price} บาท
-                                        </p>
+                                                {/* รายละเอียดสินค้า */}
+                                                <p className="product-description">
+                                                    {
+                                                        item.description
+                                                    }
+                                                </p>
 
-                                        <p>
-                                            <strong>
-                                                คงเหลือ:
-                                            </strong>{" "}
-                                            {item.stock} ชิ้น
-                                        </p>
+                                                {/* ราคาสินค้า */}
+                                                <p>
+                                                    <strong>
+                                                        ราคา:
+                                                    </strong>{" "}
+                                                    {
+                                                        item.price
+                                                    }{" "}
+                                                    บาท
+                                                </p>
 
-                                        <div className="review-tag">
-                                            ⭐{" "}
-                                            {averageRating} / 5
-                                            {" "}
-                                            ({reviews.length} รีวิว)
-                                        </div>
+                                                {/* จำนวนสินค้าที่เหลือ */}
+                                                <p>
+                                                    <strong>
+                                                        คงเหลือ:
+                                                    </strong>{" "}
+                                                    {
+                                                        item.stock
+                                                    }{" "}
+                                                    ชิ้น
+                                                </p>
 
-                                        {reviews.length > 0 && (
-                                            <div className="reviews">
-                                                <h3>รีวิว</h3>
+                                                {/* คะแนนรีวิวเฉลี่ย */}
+                                                <div className="review-tag">
+                                                    ⭐{" "}
+                                                    {
+                                                        averageRating
+                                                    }{" "}
+                                                    / 5 (
+                                                    {
+                                                        reviews.length
+                                                    }{" "}
+                                                    รีวิว)
+                                                </div>
 
-                                                {reviews
-                                                    .slice(0, 2)
-                                                    .map(
-                                                        (
-                                                            review,
-                                                            index,
-                                                        ) => (
-                                                            <div
-                                                                className="review"
-                                                                key={`${item.id}-${index}`}
-                                                            >
-                                                                <p>
-                                                                    ⭐{" "}
-                                                                    {
-                                                                        review.rating
-                                                                    }{" "}
-                                                                    / 5
-                                                                </p>
+                                                {/* แสดงรีวิวสูงสุด 2 รายการ */}
+                                                {reviews.length >
+                                                    0 && (
+                                                    <div className="reviews">
+                                                        <h3>
+                                                            รีวิว
+                                                        </h3>
 
-                                                                <p>
-                                                                    {
-                                                                        review.comment
-                                                                    }
-                                                                </p>
+                                                        {reviews
+                                                            .slice(
+                                                                0,
+                                                                2,
+                                                            )
+                                                            .map(
+                                                                (
+                                                                    review,
+                                                                    index,
+                                                                ) => (
+                                                                    <div
+                                                                        className="review"
+                                                                        key={`${item.id}-${index}`}
+                                                                    >
+                                                                        {/* คะแนนของรีวิว */}
+                                                                        <p>
+                                                                            ⭐{" "}
+                                                                            {
+                                                                                review.rating
+                                                                            }{" "}
+                                                                            / 5
+                                                                        </p>
 
-                                                                <small>
-                                                                    {
-                                                                        review.reviewerName
-                                                                    }
-                                                                </small>
-                                                            </div>
-                                                        ),
-                                                    )}
+                                                                        {/* ข้อความรีวิว */}
+                                                                        <p>
+                                                                            {
+                                                                                review.comment
+                                                                            }
+                                                                        </p>
+
+                                                                        {/* ชื่อผู้รีวิว */}
+                                                                        <small>
+                                                                            {
+                                                                                review.reviewerName
+                                                                            }
+                                                                        </small>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                    </div>
+                                                )}
+
+                                                {/* ปุ่มแก้ไขและลบสินค้า */}
+                                                <div className="product-actions">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setEditingProduct(
+                                                                item,
+                                                            )
+                                                        }
+                                                    >
+                                                        แก้ไข
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            deleteProduct(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                    >
+                                                        ลบ
+                                                    </button>
+                                                </div>
                                             </div>
-                                        )}
-
-                                        <div className="product-actions">
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setEditingProduct(
-                                                        item,
-                                                    )
-                                                }
-                                            >
-                                                แก้ไข
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    deleteProduct(
-                                                        item.id,
-                                                    )
-                                                }
-                                            >
-                                                ลบ
-                                            </button>
-                                        </div>
-                                    </div>
-                                </article>
-                            );
-                        })}
-                    </div>
-                )}
+                                        </article>
+                                    );
+                                },
+                            )}
+                        </div>
+                    )}
             </section>
-
-            <div>
-                <ProductForm
-                    key={
-                        editingProduct?.id ??
-                        "new"
-                    }
-                    editing={editingProduct}
-                    onSave={saveProduct}
-                    onCancel={() =>
-                        setEditingProduct(null)
-                    }
-                />
-            </div>
         </main>
     );
 }
+

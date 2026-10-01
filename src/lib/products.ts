@@ -1,51 +1,81 @@
 import { z } from "zod";
 
-// รายชื่อหมวดหมู่ คัดลอกจาก
-// https://dummyjson.com/products/category-list
+// รายชื่อหมวดหมู่สินค้าจาก DummyJSON
 export const CATEGORIES = [
-    "beauty", "fragrances", "furniture", "groceries",
-    "home-decoration", "kitchen-accessories", "laptops",
-    "mens-shirts", "mens-shoes", "mens-watches",
-    "mobile-accessories", "motorcycle", "skin-care",
-    "smartphones", "sports-accessories", "sunglasses",
-    "tablets", "tops", "vehicle", "womens-bags",
-    "womens-dresses", "womens-jewellery", "womens-shoes", "womens-watches",
+    "beauty",
+    "fragrances",
+    "furniture",
+    "groceries",
+    "home-decoration",
+    "kitchen-accessories",
+    "laptops",
+    "mens-shirts",
+    "mens-shoes",
+    "mens-watches",
+    "mobile-accessories",
+    "motorcycle",
+    "skin-care",
+    "smartphones",
+    "sports-accessories",
+    "sunglasses",
+    "tablets",
+    "tops",
+    "vehicle",
+    "womens-bags",
+    "womens-dresses",
+    "womens-jewellery",
+    "womens-shoes",
+    "womens-watches",
 ] as const;
 
+// Schema สำหรับตรวจสอบข้อมูลสินค้า
 export const ProductSchema = z.object({
     id: z.number(),
 
-    // เดิม: เงื่อนไขที่บังคับว่าข้อความต้องยาวอย่างน้อยเท่าใด
-    title: z.string().trim().min(1, "กรุณากรอกชื่อสินค้า"),
+    title: z
+        .string()
+        .trim()
+        .min(1, "กรุณากรอกชื่อสินค้า"),
 
-    price: z.number({ error: "กรุณากรอกราคา" }).min(0, "ราคาต้องไม่ติดลบ"),
+    price: z
+        .number({ error: "กรุณากรอกราคา" })
+        .min(0, "ราคาต้องไม่ติดลบ"),
 
     stock: z
         .number({ error: "กรุณากรอกจำนวนคงเหลือ" })
         .int("จำนวนคงเหลือต้องเป็นจำนวนเต็ม")
         .min(0, "จำนวนคงเหลือต้องไม่ติดลบ"),
 
-    category: z.enum(CATEGORIES, { error: "กรุณาเลือกหมวดหมู่" }),
+    category: z.enum(CATEGORIES, {
+        error: "กรุณาเลือกหมวดหมู่",
+    }),
 
-    description: z.string().trim().optional(),
+    // รายละเอียดสินค้า
+    description: z
+        .string()
+        .trim()
+        .optional(),
 
-    // รูปภาพหลักของสินค้า
-    thumbnail: z.string().url(),
+    // URL รูปภาพหลักของสินค้า
+    thumbnail: z
+        .string()
+        .url("กรุณาใส่ URL รูปภาพให้ถูกต้อง"),
 
-    // ข้อมูลรีวิวสินค้า
-    reviews: z.array(
-        z.object({
-            rating: z.number(),
-            comment: z.string(),
-            date: z.string(),
-            reviewerName: z.string(),
-            reviewerEmail: z.string(),
-        })
-    ).optional(),
+    // รายละเอียดรีวิวของสินค้า
+    reviews: z
+        .array(
+            z.object({
+                rating: z.number(),
+                comment: z.string(),
+                date: z.string(),
+                reviewerName: z.string(),
+                reviewerEmail: z.string(),
+            }),
+        )
+        .optional(),
 });
 
-
-
+// Schema สำหรับตรวจสอบรายการสินค้าและข้อมูลรวม
 export const ProductListSchema = z.object({
     products: z.array(ProductSchema),
     total: z.number(),
@@ -53,89 +83,118 @@ export const ProductListSchema = z.object({
     limit: z.number(),
 });
 
-// เติม: เมธอดของ Zod ที่สร้าง Schema ใหม่โดยนำฟิลด์ที่ระบุออก 
-export const ProductDraftSchema = ProductSchema.omit({ id: true }); 
-export type ProductDraft = z.infer<typeof ProductDraftSchema>; 
+// Schema สำหรับเพิ่ม/แก้ไข โดยไม่ต้องใช้ id
+export const ProductDraftSchema = ProductSchema.omit({
+    id: true,
+});
 
-// เดิม: ตัวช่วยของ Zod ที่อ่าน Type ออกมาจาก Schema
+export type ProductDraft = z.infer<typeof ProductDraftSchema>;
+
+// สร้าง Type จาก Schema
 export type Product = z.infer<typeof ProductSchema>;
 export type ProductList = z.infer<typeof ProductListSchema>;
 
 const API_BASE = "https://dummyjson.com";
 
-export const SORT_FIELDS = ["title", "price", "stock"] as const;
+// ฟิลด์ที่สามารถใช้เรียงข้อมูลได้
+export const SORT_FIELDS = [
+    "title",
+    "price",
+    "stock",
+] as const;
 
-// ลบ type SearchQuery ที่ประกาศไว้ในหัวข้อ 1.4 ออก แล้วใช้สองบล็อกนี้แทน
+// Schema สำหรับตรวจสอบข้อมูลการค้นหา
 export const SearchQuerySchema = z.object({
     q: z.string().trim(),
+
     limit: z
         .number({ error: "กรุณากรอกจำนวนรายการ" })
         .int("จำนวนรายการต้องเป็นจำนวนเต็ม")
         .min(1, "อย่างน้อย 1 รายการ")
         .max(30, "ไม่เกิน 30 รายการ"),
+
     sortBy: z.enum(SORT_FIELDS),
 });
 
 export type SearchQuery = z.infer<typeof SearchQuerySchema>;
 
+// กำหนดค่าเริ่มต้นของการค้นหา
 export const defaultQuery: SearchQuery = {
     q: "",
     limit: 10,
     sortBy: "title",
 };
 
+// สร้าง URL สำหรับเรียก API ตามเงื่อนไขการค้นหา
 export function buildProductUrl(query: SearchQuery): string {
     const params = new URLSearchParams();
 
     params.set("q", query.q);
 
-    // เติม limit เพื่อกำหนดจำนวนรายการที่ต้องการ
+    // กำหนดจำนวนรายการที่ต้องการ
     params.set("limit", String(query.limit));
 
-    // กำหนดฟิลด์ที่ใช้เรียงลำดับ
+    // กำหนดฟิลด์ที่ใช้เรียงข้อมูล
     params.set("sortBy", query.sortBy);
-
-    // กำหนดลำดับการเรียงจากน้อยไปมาก
     params.set("order", "asc");
 
-    // เลือกเฉพาะฟิลด์ที่ต้องการจากข้อมูลสินค้า
+    // เลือกเฉพาะข้อมูลสินค้าที่ต้องการ
     params.set(
         "select",
-        "id,title,price,stock,category,description,thumbnail,reviews"
+        "id,title,price,stock,category,description,thumbnail,reviews",
     );
 
     console.log(
         "เรียกข้อมูลจาก URL:",
-        `${API_BASE}/products/search?${params.toString()}`
+        `${API_BASE}/products/search?${params.toString()}`,
     );
 
-    console.log("เรียกข้อมูลด้วย Query:", query);
+    console.log(
+        "เรียกข้อมูลด้วย Query:",
+        query,
+    );
 
     return `${API_BASE}/products/search?${params.toString()}`;
 }
 
+// เรียก API และตรวจสอบข้อมูลที่ได้รับ
 export async function fetchProducts(
-    query: SearchQuery
+    query: SearchQuery,
 ): Promise<ProductList> {
     const response = await fetch(buildProductUrl(query));
 
-    console.log("สถานะการตอบกลับจาก API:", response);
+    console.log(
+        "สถานะการตอบกลับจาก API:",
+        response,
+    );
 
-    // เดิม: ค่าที่บอกว่าสถานะการตอบกลับอยู่ในช่วง 200 ถึง 299 หรือไม่
+    // ตรวจสอบว่า API ตอบกลับสำเร็จหรือไม่
     if (!response.ok) {
-        throw new Error(`เรียกข้อมูลไม่สำเร็จ สถานะ ${response.status}`);
+        throw new Error(
+            `เรียกข้อมูลไม่สำเร็จ สถานะ ${response.status}`,
+        );
     }
 
-    // เติม: เมธอดที่อ่านเนื้อหาการตอบกลับเป็น JSON
+    // แปลงข้อมูลที่ได้รับเป็น JSON
     const data = await response.json();
 
-    console.log("ข้อมูลที่ได้รับจาก API:", data);
+    console.log(
+        "ข้อมูลที่ได้รับจาก API:",
+        data,
+    );
 
-    // เติม: เมธอดที่ตรวจข้อมูลด้วยผลลัพธ์แบบการเป็น Error
+    // ตรวจสอบรูปแบบข้อมูลด้วย Zod
     const result = ProductListSchema.safeParse(data);
 
     if (!result.success) {
-        throw new Error("รูปแบบข้อมูลที่ได้รับไม่ตรงกับที่กำหนดไว้");
+        console.error(
+            "ข้อมูลไม่ผ่านการตรวจสอบ:",
+            result.error,
+        );
+
+        throw new Error(
+            "รูปแบบข้อมูลที่ได้รับไม่ตรงกับที่กำหนดไว้",
+        );
     }
 
     return result.data;
